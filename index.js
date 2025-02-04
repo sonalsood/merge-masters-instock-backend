@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-const app = new express();
+import warehousesRoute from "./routes/warehouse-routes.js";
+const app = express();
 const PORT = process.env.PORT || 5050;
 
+app.use("/warehouses", warehousesRoute);
 app.use(cors());
 
 app.use(express.json());
