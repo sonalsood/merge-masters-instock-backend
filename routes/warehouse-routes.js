@@ -8,4 +8,6 @@ router.get("/", warehouseController.index);
 // GET /warehouses/:id
 router.route("/:id").get(warehouseController.findOne);
 
+//GET warehouses/:id/inventories
+router.route("/:id/inventories").get(warehouseController.inventory);
 export default router;

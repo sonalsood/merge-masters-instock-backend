@@ -57,4 +57,26 @@ const findOne = async (req, res) => {
   }
 };
 
-export { index, findOne };
+// a list of all inventories for a given warehouse ID
+const inventory = async (req, res) => {
+  try {
+    const posts = await knex("warehouses")
+      .join("inventories", "inventories.warehouse_id", "warehouses.id")
+      .where({ warehouse_id: req.params.id })
+      .select(
+        "inventories.id",
+        "inventories.item_name",
+        "inventories.category",
+        "inventories.status",
+        "inventories.quantity"
+      );
+
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(404).json({
+      message: `no inventory found with this warehouse ID ${req.params.id}: ${error}`,
+    });
+  }
+};
+
+export { index, findOne, inventory };
