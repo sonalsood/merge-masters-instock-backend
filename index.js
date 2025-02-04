@@ -5,7 +5,7 @@ import warehousesRoute from "./routes/warehouse-routes.js";
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-app.use("/warehouses", warehousesRoute);
+app.use("/api/warehouses", warehousesRoute);
 app.use(cors());
 
 app.use(express.json());
@@ -15,8 +15,6 @@ import warehouseRoutes from "./routes/warehouse-routes.js";
 app.get("/", (_req, res) => {
   res.send("merge-masters-instock-backend API HOMEPAGE");
 });
-
-app.use("/warehouses", warehouseRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is listening on port " + PORT);

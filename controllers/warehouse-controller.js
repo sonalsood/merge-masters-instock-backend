@@ -26,9 +26,21 @@ const index = async (_req, res) => {
 // GET single warehouse items
 const findOne = async (req, res) => {
   try {
-    const warehouseFound = await knex("warehouses").where({
-      id: req.params.id,
-    });
+    const warehouseFound = await knex("warehouses")
+      .select(
+        "id",
+        "warehouse_name",
+        "address",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email"
+      )
+      .where({
+        id: req.params.id,
+      });
 
     if (warehouseFound.length === 0) {
       return res.status(404).json({
