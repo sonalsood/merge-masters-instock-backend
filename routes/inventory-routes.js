@@ -6,4 +6,3 @@ import * as inventoryController from "../controllers/inventory-controller.js";
 router.get("/", inventoryController.index);
 
 export default router;
-$;
