@@ -10,8 +10,6 @@ app.use(cors());
 
 app.use(express.json());
 
-import warehouseRoutes from "./routes/warehouse-routes.js";
-
 app.get("/", (_req, res) => {
   res.send("merge-masters-instock-backend API HOMEPAGE");
 });
