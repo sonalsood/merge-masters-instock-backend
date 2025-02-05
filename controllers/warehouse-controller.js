@@ -78,5 +78,29 @@ const inventory = async (req, res) => {
     });
   }
 };
+// DELETE a warehouse and all of the inventory items in the give warehouse.
+const deleteWarehouse = async (req, res) => {
+  const warehouseId = req.params.id;
+  try{
+    const rowsDeletedInventories = await knex("inventories")
+    .where("warehouse_id", warehouseId)
+    .delete();
 
-export { index, findOne, inventory };
+      const rowsDeletedWarehouse = await knex("warehouses")
+      .where("id", warehouseId)
+      .delete();
+
+
+      if (rowsDeletedWarehouse === 0)  {
+        return res.status(404).json({
+          message: `Warehouse with ID ${warehouseId} not found`,
+        });
+      }
+      return res.status(204).send();
+    } catch(error){
+    console.error(error);
+    return res.status(500).send();
+  }
+};
+
+export { index, findOne, inventory, deleteWarehouse };

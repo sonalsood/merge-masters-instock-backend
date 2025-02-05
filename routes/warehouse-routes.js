@@ -6,8 +6,9 @@ import * as warehouseController from "../controllers/warehouse-controller.js";
 router.get("/", warehouseController.index);
 
 // GET /warehouses/:id
-router.route("/:id").get(warehouseController.findOne);
+router.route("/:id").get(warehouseController.findOne).delete(warehouseController.deleteWarehouse);
 
 //GET warehouses/:id/inventories
 router.route("/:id/inventories").get(warehouseController.inventory);
+
 export default router;
