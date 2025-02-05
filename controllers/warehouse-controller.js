@@ -81,7 +81,7 @@ const editWarehouse = async (req, res) => {
   ) {
     return res
       .status(400)
-      .json("Error adding warehouse because of missing properties");
+      .json("Error editing warehouse because of missing properties");
   }
   if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(contact_phone)) {
     return res.status(400).json({ error: "Invalid phone number" });
@@ -90,7 +90,15 @@ const editWarehouse = async (req, res) => {
     return res.status(400).json({ error: "Invalid email" });
   }
   try {
-    await knex("warehouses").where({ id: req.params.id }).update(req.body);
+    const rowAffected = await knex("warehouses")
+      .where({ id: req.params.id })
+      .update(req.body);
+    console.log(rowAffected);
+    if (rowAffected === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${req.params.id} not found`,
+      });
+    }
     const editedWarehouse = await knex("warehouses")
       .select(
         "id",
