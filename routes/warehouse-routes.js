@@ -8,8 +8,11 @@ router.get("/", warehouseController.index);
 //POST /api/warehouses
 router.post("/", warehouseController.addWarehouse);
 
-// GET /warehouses/:id
-router.route("/:id").get(warehouseController.findOne);
+// GET /warehouses/:id  PUT /warehouses/:id
+router
+  .route("/:id")
+  .get(warehouseController.findOne)
+  .put(warehouseController.editWarehouse);
 
 //GET warehouses/:id/inventories
 router.route("/:id/inventories").get(warehouseController.inventory);
