@@ -90,7 +90,27 @@ const editWarehouse = async (req, res) => {
     return res.status(400).json({ error: "Invalid email" });
   }
   try {
-    const warehouseId = await knex("warehouses").where({id: req.params.id}).update(req.body)
+    await knex("warehouses").where({ id: req.params.id }).update(req.body);
+    const editedWarehouse = await knex("warehouses")
+      .select(
+        "id",
+        "warehouse_name",
+        "address",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email"
+      )
+      .where({
+        id: req.params.id,
+      })
+      .first();
+    res.status(200).json(editedWarehouse);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: `Error adding warehouse. ${error}` });
   }
 };
 
@@ -143,7 +163,8 @@ const addWarehouse = async (req, res) => {
       )
       .where({
         id: newWarehouseId[0],
-      });
+      })
+      .first();
     res.status(201).json(newWarehouse);
   } catch (error) {
     console.log(error);
