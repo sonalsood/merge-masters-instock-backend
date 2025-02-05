@@ -5,6 +5,9 @@ import * as warehouseController from "../controllers/warehouse-controller.js";
 // GET /api/warehouses
 router.get("/", warehouseController.index);
 
+//POST /api/warehouses
+router.post("/", warehouseController.addWarehouse);
+
 // GET /warehouses/:id
 router.route("/:id").get(warehouseController.findOne).delete(warehouseController.deleteWarehouse);
 

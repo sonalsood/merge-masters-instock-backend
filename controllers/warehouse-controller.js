@@ -57,6 +57,66 @@ const findOne = async (req, res) => {
   }
 };
 
+//POST warehouse
+
+const addWarehouse = async (req, res) => {
+  const {
+    warehouse_name,
+    address,
+    city,
+    country,
+    contact_name,
+    contact_position,
+    contact_phone,
+    contact_email,
+  } = req.body;
+  if (
+    !warehouse_name ||
+    !address ||
+    !city ||
+    !country ||
+    !contact_name ||
+    !contact_position ||
+    !contact_phone ||
+    !contact_email
+  ) {
+    return res
+      .status(400)
+      .json("Error adding warehouse because of missing properties");
+  }
+  if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(contact_phone)) {
+    return res.status(400).json({ error: "Invalid phone number" });
+  }
+  if (!/\S+@\S+\.\S+/.test(contact_email)) {
+    return res.status(400).json({ error: "Invalid email" });
+  }
+
+  try {
+    console.log(req);
+    const newWarehouseId = await knex("warehouses").insert(req.body);
+    console.log(req.body);
+    const newWarehouse = await knex("warehouses")
+      .select(
+        "id",
+        "warehouse_name",
+        "address",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email"
+      )
+      .where({
+        id: newWarehouseId[0],
+      });
+    res.status(201).json(newWarehouse);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: `Error adding warehouse. ${error}` });
+  }
+};
+
 // a list of all inventories for a given warehouse ID
 const inventory = async (req, res) => {
   try {
@@ -103,4 +163,5 @@ const deleteWarehouse = async (req, res) => {
   }
 };
 
-export { index, findOne, inventory, deleteWarehouse };
+export { index, findOne, addWarehouse, inventory, deleteWarehouse };
+
