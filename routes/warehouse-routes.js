@@ -8,7 +8,7 @@ router.get("/", warehouseController.index);
 //POST /api/warehouses
 router.post("/", warehouseController.addWarehouse);
 
-// GET /warehouses/:id
+// GET AND DELETE /warehouses/:id
 router.route("/:id").get(warehouseController.findOne).delete(warehouseController.deleteWarehouse);
 
 //GET warehouses/:id/inventories
