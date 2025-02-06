@@ -57,8 +57,72 @@ const findOne = async (req, res) => {
   }
 };
 
-//POST warehouse
+//Edit warehouse
+const editWarehouse = async (req, res) => {
+  const {
+    warehouse_name,
+    address,
+    city,
+    country,
+    contact_name,
+    contact_position,
+    contact_phone,
+    contact_email,
+  } = req.body;
+  if (
+    !warehouse_name ||
+    !address ||
+    !city ||
+    !country ||
+    !contact_name ||
+    !contact_position ||
+    !contact_phone ||
+    !contact_email
+  ) {
+    return res
+      .status(400)
+      .json("Error editing warehouse because of missing properties");
+  }
+  if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(contact_phone)) {
+    return res.status(400).json({ error: "Invalid phone number" });
+  }
+  if (!/\S+@\S+\.\S+/.test(contact_email)) {
+    return res.status(400).json({ error: "Invalid email" });
+  }
+  try {
+    const rowAffected = await knex("warehouses")
+      .where({ id: req.params.id })
+      .update(req.body);
+    console.log(rowAffected);
+    if (rowAffected === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${req.params.id} not found`,
+      });
+    }
+    const editedWarehouse = await knex("warehouses")
+      .select(
+        "id",
+        "warehouse_name",
+        "address",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email"
+      )
+      .where({
+        id: req.params.id,
+      })
+      .first();
+    res.status(200).json(editedWarehouse);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: `Error adding warehouse. ${error}` });
+  }
+};
 
+//POST warehouse
 const addWarehouse = async (req, res) => {
   const {
     warehouse_name,
@@ -92,9 +156,7 @@ const addWarehouse = async (req, res) => {
   }
 
   try {
-    console.log(req);
     const newWarehouseId = await knex("warehouses").insert(req.body);
-    console.log(req.body);
     const newWarehouse = await knex("warehouses")
       .select(
         "id",
@@ -109,7 +171,8 @@ const addWarehouse = async (req, res) => {
       )
       .where({
         id: newWarehouseId[0],
-      });
+      })
+      .first();
     res.status(201).json(newWarehouse);
   } catch (error) {
     console.log(error);
@@ -139,4 +202,4 @@ const inventory = async (req, res) => {
   }
 };
 
-export { index, findOne, addWarehouse, inventory };
+export { index, findOne, editWarehouse, addWarehouse, inventory };
