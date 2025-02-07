@@ -58,11 +58,11 @@ const findOne = async (req, res) => {
 
 // POST inventory
 const addInventory = async (req, res) => {
-  const { warehouse_name, item_name, description, category, status, quantity } =
+  const { warehouse_id, item_name, description, category, status, quantity } =
     req.body;
 
   // Missing fields notification
-  if (!warehouse_name) {
+  if (!warehouse_id) {
     return res.status(400).json({ error: "Warehouse name is required" });
   }
   if (!item_name) {
@@ -112,7 +112,7 @@ const addInventory = async (req, res) => {
     // Validate if the warehouse exists
     const warehouse = await knex("warehouses")
       .select("id")
-      .where("warehouse_name", warehouse_name)
+      .where("id", warehouse_id)
       .first();
 
     if (!warehouse) {
@@ -121,7 +121,7 @@ const addInventory = async (req, res) => {
 
     // Insert new inventory
     const [newInventoryId] = await knex("inventories").insert({
-      warehouse_id: warehouse.id,
+      warehouse_id,
       item_name,
       description,
       category,
@@ -133,8 +133,8 @@ const addInventory = async (req, res) => {
     const newInventory = await knex("inventories")
       .join("warehouses", "warehouses.id", "inventories.warehouse_id")
       .select(
-        "inventories.id",
-        "warehouses.warehouse_name",
+        "warehouses.id",
+        "inventories.warehouse_id",
         "inventories.item_name",
         "inventories.description",
         "inventories.category",

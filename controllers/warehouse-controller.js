@@ -94,6 +94,7 @@ const editWarehouse = async (req, res) => {
       .where({ id: req.params.id })
       .update(req.body);
     console.log(rowAffected);
+    console.log(req.body);
     if (rowAffected === 0) {
       return res.status(404).json({
         message: `Warehouse with ID ${req.params.id} not found`,
