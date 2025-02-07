@@ -8,4 +8,7 @@ router.get("/", inventoryController.index);
 // GET /api/inventories/:id
 router.get("/:id", inventoryController.findOne);
 
+// POST /api/inventories
+router.post("/", inventoryController.addInventory);
+
 export default router;
