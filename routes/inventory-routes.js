@@ -15,6 +15,8 @@ router.post("/", inventoryController.addInventory);
 router
   .route("/:id")
   .get(inventoryController.findOne)
-  .put(inventoryController.editInventory);
+  .put(inventoryController.editInventory)
+  .delete(inventoryController.deleteInventory);
+  
 
 export default router;
