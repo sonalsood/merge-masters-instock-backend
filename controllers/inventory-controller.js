@@ -214,6 +214,7 @@ const deleteInventory = async (req, res) => {
     });
   }
 };
+
 export {
   getInventories,
   findInventory,

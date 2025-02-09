@@ -5,7 +5,7 @@ import * as warehouseController from "../controllers/warehouse-controller.js";
 router
   .route("/")
   .get(warehouseController.getWarehouses)
-  .post("/", warehouseController.addWarehouse);
+  .post(warehouseController.addWarehouse);
 
 router
   .route("/:id")
