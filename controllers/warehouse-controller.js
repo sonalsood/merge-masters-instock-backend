@@ -4,7 +4,7 @@ const knex = initKnex(configuration);
 
 const getWarehouses = async (_req, res) => {
   try {
-    const items = await knex("warehouses").select(
+    const warehouses = await knex("warehouses").select(
       "id",
       "warehouse_name",
       "address",
@@ -15,7 +15,7 @@ const getWarehouses = async (_req, res) => {
       "contact_phone",
       "contact_email"
     );
-    res.status(200).json(items);
+    res.status(200).json(warehouses);
   } catch (err) {
     console.log(err);
     res.status(400).send("Error getting warehouse items.");
@@ -38,7 +38,7 @@ const findWarehouse = async (req, res) => {
       )
       .where({
         id: req.params.id,
-      });
+      }).first();
 
     if (warehouseFound.length === 0) {
       return res.status(404).json({
@@ -46,8 +46,7 @@ const findWarehouse = async (req, res) => {
       });
     }
 
-    const warehouseData = warehouseFound[0];
-    res.status(200).json(warehouseData);
+    res.status(200).json(warehouseFound);
   } catch (error) {
     res.status(500).json({
       message: `Unable to retrieve warehouse data for warehouse with ID ${req.params.id}`,
@@ -90,8 +89,6 @@ const editWarehouse = async (req, res) => {
     const rowAffected = await knex("warehouses")
       .where({ id: req.params.id })
       .update(req.body);
-    console.log(rowAffected);
-    console.log(req.body);
     if (rowAffected === 0) {
       return res.status(404).json({
         message: `Warehouse with ID ${req.params.id} not found`,

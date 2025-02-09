@@ -230,7 +230,7 @@ const deleteInventory = async (req, res) => {
 
     await knex("inventories").where("id", req.params.id).del();
 
-    res.status(200).json({
+    res.status(204).json({
       message: `Inventory with ID ${req.params.id} deleted successfully`,
     });
   } catch (error) {
