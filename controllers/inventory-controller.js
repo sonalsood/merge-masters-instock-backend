@@ -35,7 +35,8 @@ const findInventory = async (req, res) => {
         "inventories.status",
         "inventories.quantity"
       )
-      .where("inventories.id", req.params.id).first();
+      .where("inventories.id", req.params.id)
+      .first();
 
     if (inventoryFound.length === 0) {
       return res.status(404).json({
@@ -91,15 +92,6 @@ const addInventory = async (req, res) => {
   }
 
   try {
-    const warehouse = await knex("warehouses")
-      .select("id")
-      .where("id", warehouse_id)
-      .first();
-
-    if (!warehouse) {
-      return res.status(400).json({ error: "Invalid warehouse name" });
-    }
-
     const [newInventoryId] = await knex("inventories").insert(req.body);
 
     const newInventory = await knex("inventories")
@@ -161,15 +153,6 @@ const editInventory = async (req, res) => {
   }
 
   try {
-    const warehouse = await knex("warehouses")
-      .select("id")
-      .where("id", warehouse_id)
-      .first();
-
-    if (!warehouse) {
-      return res.status(400).json({ error: "Invalid warehouse name" });
-    }
-
     const rowAffected = await knex("inventories")
       .where({ id: req.params.id })
       .update({
@@ -188,17 +171,16 @@ const editInventory = async (req, res) => {
     }
 
     const editedInventory = await knex("inventories")
-      .join("warehouses", "warehouses.id", "inventories.warehouse_id")
       .select(
-        "inventories.id",
-        "inventories.warehouse_id",
-        "inventories.item_name",
-        "inventories.description",
-        "inventories.category",
-        "inventories.status",
-        "inventories.quantity"
+        "id",
+        "warehouse_id",
+        "item_name",
+        "description",
+        "category",
+        "status",
+        "quantity"
       )
-      .where("inventories.id", req.params.id)
+      .where({ id: req.params.id })
       .first();
 
     res.status(200).json(editedInventory);
@@ -207,6 +189,7 @@ const editInventory = async (req, res) => {
     res.status(400).json({ message: `Error updating inventory. ${error}` });
   }
 };
+
 const deleteInventory = async (req, res) => {
   try {
     const inventory = await knex("inventories")
