@@ -2,8 +2,7 @@ import initKnex from "knex";
 import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
-// GET all warehouse items
-const index = async (_req, res) => {
+const getWarehouses = async (_req, res) => {
   try {
     const items = await knex("warehouses").select(
       "id",
@@ -23,8 +22,7 @@ const index = async (_req, res) => {
   }
 };
 
-// GET single warehouse items
-const findOne = async (req, res) => {
+const findWarehouse = async (req, res) => {
   try {
     const warehouseFound = await knex("warehouses")
       .select(
@@ -57,7 +55,6 @@ const findOne = async (req, res) => {
   }
 };
 
-//Edit warehouse
 const editWarehouse = async (req, res) => {
   const {
     warehouse_name,
@@ -123,7 +120,6 @@ const editWarehouse = async (req, res) => {
   }
 };
 
-//POST warehouse
 const addWarehouse = async (req, res) => {
   const {
     warehouse_name,
@@ -181,8 +177,7 @@ const addWarehouse = async (req, res) => {
   }
 };
 
-// a list of all inventories for a given warehouse ID
-const inventory = async (req, res) => {
+const getWarehouseinventories = async (req, res) => {
   try {
     const posts = await knex("warehouses")
       .join("inventories", "inventories.warehouse_id", "warehouses.id")
@@ -202,29 +197,35 @@ const inventory = async (req, res) => {
     });
   }
 };
-// DELETE a warehouse and all of the inventory items in the give warehouse.
+
 const deleteWarehouse = async (req, res) => {
   const warehouseId = req.params.id;
-  try{
+  try {
     const rowsDeletedInventories = await knex("inventories")
-    .where("warehouse_id", warehouseId)
-    .delete();
+      .where("warehouse_id", warehouseId)
+      .delete();
 
-      const rowsDeletedWarehouse = await knex("warehouses")
+    const rowsDeletedWarehouse = await knex("warehouses")
       .where("id", warehouseId)
       .delete();
 
-
-      if (rowsDeletedWarehouse === 0)  {
-        return res.status(404).json({
-          message: `Warehouse with ID ${warehouseId} not found`,
-        });
-      }
-      return res.status(204).send();
-    } catch(error){
+    if (rowsDeletedWarehouse === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${warehouseId} not found`,
+      });
+    }
+    return res.status(204).send();
+  } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
 };
 
-export { index, findOne, editWarehouse, addWarehouse, inventory, deleteWarehouse };
+export {
+  getWarehouses,
+  findWarehouse,
+  editWarehouse,
+  addWarehouse,
+  getWarehouseinventories,
+  deleteWarehouse,
+};

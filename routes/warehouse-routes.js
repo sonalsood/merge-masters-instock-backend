@@ -2,20 +2,19 @@ import express from "express";
 const router = express.Router();
 import * as warehouseController from "../controllers/warehouse-controller.js";
 
-// GET /api/warehouses
-router.get("/", warehouseController.index);
+router
+  .route("/")
+  .get(warehouseController.getWarehouses)
+  .post("/", warehouseController.addWarehouse);
 
-//POST /api/warehouses
-router.post("/", warehouseController.addWarehouse);
-
-// GET AND DELETE /warehouses/:id  PUT /warehouses/:id
 router
   .route("/:id")
-  .get(warehouseController.findOne)
+  .get(warehouseController.findWarehouse)
   .put(warehouseController.editWarehouse)
   .delete(warehouseController.deleteWarehouse);
 
-//GET warehouses/:id/inventories
-router.route("/:id/inventories").get(warehouseController.inventory);
+router
+  .route("/:id/inventories")
+  .get(warehouseController.getWarehouseinventories);
 
 export default router;

@@ -3,8 +3,7 @@ import configuration from "../knexfile.js";
 
 const knex = initKnex(configuration);
 
-// Get all the inventory items
-const index = async (_req, res) => {
+const getInventories = async (_req, res) => {
   try {
     const items = await knex("inventories")
       .join("warehouses", "warehouses.id", "inventories.warehouse_id")
@@ -24,8 +23,7 @@ const index = async (_req, res) => {
   }
 };
 
-// GET single inventory item
-const findOne = async (req, res) => {
+const findInventory = async (req, res) => {
   try {
     const inventoryFound = await knex("inventories")
       .join("warehouses", "warehouses.id", "inventories.warehouse_id")
@@ -55,12 +53,10 @@ const findOne = async (req, res) => {
   }
 };
 
-// POST inventory
 const addInventory = async (req, res) => {
   const { warehouse_id, item_name, description, category, status, quantity } =
     req.body;
 
-  // Missing fields notification
   if (!warehouse_id) {
     return res.status(400).json({ error: "Warehouse name is required" });
   }
@@ -105,7 +101,6 @@ const addInventory = async (req, res) => {
       return res.status(400).json({ error: "Invalid warehouse name" });
     }
 
-    // Insert new inventory to database
     const [newInventoryId] = await knex("inventories").insert({
       warehouse_id,
       item_name,
@@ -115,7 +110,6 @@ const addInventory = async (req, res) => {
       quantity,
     });
 
-    // Fetch newly added inventory
     const newInventory = await knex("inventories")
       .join("warehouses", "warehouses.id", "inventories.warehouse_id")
       .select(
@@ -137,12 +131,10 @@ const addInventory = async (req, res) => {
   }
 };
 
-// EDIT/PUT inventory
 const editInventory = async (req, res) => {
   const { warehouse_id, item_name, description, category, status, quantity } =
     req.body;
 
-  // VALIDATION
   if (!warehouse_id) {
     return res.status(400).json({ error: "Warehouse name is required" });
   }
@@ -187,7 +179,6 @@ const editInventory = async (req, res) => {
       return res.status(400).json({ error: "Invalid warehouse name" });
     }
 
-    // Insert updated inventory to database
     const rowAffected = await knex("inventories")
       .where({ id: req.params.id })
       .update({
@@ -205,7 +196,6 @@ const editInventory = async (req, res) => {
         .json({ message: `Inventory with ID ${req.params.id} not found` });
     }
 
-    // Fetch updated inventory
     const editedInventory = await knex("inventories")
       .join("warehouses", "warehouses.id", "inventories.warehouse_id")
       .select(
@@ -226,7 +216,6 @@ const editInventory = async (req, res) => {
     res.status(400).json({ message: `Error updating inventory. ${error}` });
   }
 };
-// DELETE inventory
 const deleteInventory = async (req, res) => {
   try {
     const inventory = await knex("inventories")
@@ -244,11 +233,17 @@ const deleteInventory = async (req, res) => {
     res.status(200).json({
       message: `Inventory with ID ${req.params.id} deleted successfully`,
     });
-  }catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).json({
       message: `Error deleting inventory with ID ${req.params.id}`,
     });
   }
 };
-export { index, findOne, addInventory, editInventory, deleteInventory };
+export {
+  getInventories,
+  findInventory,
+  addInventory,
+  editInventory,
+  deleteInventory,
+};
