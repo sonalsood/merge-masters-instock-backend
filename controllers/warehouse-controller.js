@@ -2,10 +2,9 @@ import initKnex from "knex";
 import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
-// GET all warehouse items
-const index = async (_req, res) => {
+const getWarehouses = async (_req, res) => {
   try {
-    const items = await knex("warehouses").select(
+    const warehouses = await knex("warehouses").select(
       "id",
       "warehouse_name",
       "address",
@@ -16,15 +15,14 @@ const index = async (_req, res) => {
       "contact_phone",
       "contact_email"
     );
-    res.status(200).json(items);
+    res.status(200).json(warehouses);
   } catch (err) {
     console.log(err);
     res.status(400).send("Error getting warehouse items.");
   }
 };
 
-// GET single warehouse items
-const findOne = async (req, res) => {
+const findWarehouse = async (req, res) => {
   try {
     const warehouseFound = await knex("warehouses")
       .select(
@@ -40,7 +38,7 @@ const findOne = async (req, res) => {
       )
       .where({
         id: req.params.id,
-      });
+      }).first();
 
     if (warehouseFound.length === 0) {
       return res.status(404).json({
@@ -48,8 +46,7 @@ const findOne = async (req, res) => {
       });
     }
 
-    const warehouseData = warehouseFound[0];
-    res.status(200).json(warehouseData);
+    res.status(200).json(warehouseFound);
   } catch (error) {
     res.status(500).json({
       message: `Unable to retrieve warehouse data for warehouse with ID ${req.params.id}`,
@@ -57,7 +54,6 @@ const findOne = async (req, res) => {
   }
 };
 
-//Edit warehouse
 const editWarehouse = async (req, res) => {
   const {
     warehouse_name,
@@ -93,8 +89,6 @@ const editWarehouse = async (req, res) => {
     const rowAffected = await knex("warehouses")
       .where({ id: req.params.id })
       .update(req.body);
-    console.log(rowAffected);
-    console.log(req.body);
     if (rowAffected === 0) {
       return res.status(404).json({
         message: `Warehouse with ID ${req.params.id} not found`,
@@ -123,7 +117,6 @@ const editWarehouse = async (req, res) => {
   }
 };
 
-//POST warehouse
 const addWarehouse = async (req, res) => {
   const {
     warehouse_name,
@@ -181,10 +174,9 @@ const addWarehouse = async (req, res) => {
   }
 };
 
-// a list of all inventories for a given warehouse ID
-const inventory = async (req, res) => {
+const getWarehouseinventories = async (req, res) => {
   try {
-    const posts = await knex("warehouses")
+    const inventories = await knex("warehouses")
       .join("inventories", "inventories.warehouse_id", "warehouses.id")
       .where({ warehouse_id: req.params.id })
       .select(
@@ -195,36 +187,42 @@ const inventory = async (req, res) => {
         "inventories.quantity"
       );
 
-    res.status(200).json(posts);
+    res.status(200).json(inventories);
   } catch (error) {
     res.status(404).json({
       message: `no inventory found with this warehouse ID ${req.params.id}: ${error}`,
     });
   }
 };
-// DELETE a warehouse and all of the inventory items in the give warehouse.
+
 const deleteWarehouse = async (req, res) => {
   const warehouseId = req.params.id;
-  try{
+  try {
     const rowsDeletedInventories = await knex("inventories")
-    .where("warehouse_id", warehouseId)
-    .delete();
+      .where("warehouse_id", warehouseId)
+      .delete();
 
-      const rowsDeletedWarehouse = await knex("warehouses")
+    const rowsDeletedWarehouse = await knex("warehouses")
       .where("id", warehouseId)
       .delete();
 
-
-      if (rowsDeletedWarehouse === 0)  {
-        return res.status(404).json({
-          message: `Warehouse with ID ${warehouseId} not found`,
-        });
-      }
-      return res.status(204).send();
-    } catch(error){
+    if (rowsDeletedWarehouse === 0) {
+      return res.status(404).json({
+        message: `Warehouse with ID ${warehouseId} not found`,
+      });
+    }
+    return res.status(204).send();
+  } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
 };
 
-export { index, findOne, editWarehouse, addWarehouse, inventory, deleteWarehouse };
+export {
+  getWarehouses,
+  findWarehouse,
+  editWarehouse,
+  addWarehouse,
+  getWarehouseinventories,
+  deleteWarehouse,
+};
